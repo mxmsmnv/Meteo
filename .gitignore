@@ -1,0 +1,11 @@
+.DS_Store
+.claude/
+.codex/
+
+*.log
+*.tmp
+*.bak
+
+/cache/*
+!/cache/.gitkeep
+!/cache/.gitignore
