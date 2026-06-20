@@ -2,6 +2,8 @@
 
 Weather module for [ProcessWire CMS](https://processwire.com/). Meteo gets current weather and forecast data by coordinates or city name, normalizes provider responses into one array format, caches API responses, and can render ready-made weather widgets.
 
+![Meteo](assets/Meteo.png)
+
 ## Features
 
 - Weather providers: Open-Meteo, OpenWeatherMap, WeatherAPI.com.
