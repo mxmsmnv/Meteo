@@ -33,12 +33,14 @@ trait MeteoRendering {
     }
 
     protected function resolveTemplate(string $t): string|false {
+        $moduleTemplatesPath = dirname(__DIR__) . '/templates';
+
         if (str_starts_with($t, '/')) {
             $real = realpath($t);
             if (!$real || !is_file($real)) return false;
             $allowedRoots = [
                 realpath($this->wire('config')->paths->templates . 'Meteo'),
-                realpath(__DIR__ . '/templates'),
+                realpath($moduleTemplatesPath),
             ];
             foreach (array_filter($allowedRoots) as $root) {
                 if ($real === $root || str_starts_with($real, $root . DIRECTORY_SEPARATOR)) return $real;
@@ -49,7 +51,7 @@ trait MeteoRendering {
         if ($t === '') return false;
         $site = $this->wire('config')->paths->templates . "Meteo/{$t}.php";
         if (file_exists($site)) return $site;
-        $mod = __DIR__ . "/templates/{$t}.php";
+        $mod = "{$moduleTemplatesPath}/{$t}.php";
         if (file_exists($mod)) return $mod;
         return false;
     }

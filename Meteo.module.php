@@ -9,13 +9,14 @@ require_once __DIR__ . '/src/MeteoProvider.php';
 require_once __DIR__ . '/src/MeteoProviderOpenMeteo.php';
 require_once __DIR__ . '/src/MeteoProviderOWM.php';
 require_once __DIR__ . '/src/MeteoProviderWAPI.php';
+require_once __DIR__ . '/src/MeteoProviderApple.php';
 
 /**
  * Meteo
  *
  * Weather integration for ProcessWire.
  * Returns structured data — no markup, no framework assumptions.
- * Providers: Open-Meteo (free), OpenWeatherMap, WeatherAPI.com
+ * Providers: Open-Meteo (free), OpenWeatherMap, WeatherAPI.com, Apple WeatherKit
  *
  * @version 1.1.0
  * @license MIT
@@ -187,6 +188,7 @@ class Meteo extends WireData implements Module, ConfigurableModule {
         if (!isset($instances[$name])) {
             $class = match($name) {
                 'openweathermap' => MeteoProviderOWM::class,
+                'apple'          => MeteoProviderApple::class,
                 'weatherapi'     => MeteoProviderWAPI::class,
                 default          => MeteoProviderOpenMeteo::class,
             };
@@ -196,7 +198,7 @@ class Meteo extends WireData implements Module, ConfigurableModule {
     }
 
     protected function isKnownProvider(string $name): bool {
-        return in_array($name, ['open_meteo', 'openweathermap', 'weatherapi'], true);
+        return in_array($name, ['open_meteo', 'openweathermap', 'weatherapi', 'apple'], true);
     }
 
     // ----------------------------------------------------------------
@@ -213,6 +215,10 @@ class Meteo extends WireData implements Module, ConfigurableModule {
             'cache_time'        => (int)($this->cache_time   ?? 1800),
             'owm_key'           => $this->owm_key            ?: '',
             'wapi_key'          => $this->wapi_key           ?: '',
+            'apple_team_id'      => $this->apple_team_id      ?: '',
+            'apple_service_id'   => $this->apple_service_id   ?: '',
+            'apple_key_id'       => $this->apple_key_id       ?: '',
+            'apple_private_key_path' => $this->apple_private_key_path ?: '',
             'fallback_providers'=> $this->fallback_providers ?: '',
         ];
     }

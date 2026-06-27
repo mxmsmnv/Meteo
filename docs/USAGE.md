@@ -201,8 +201,21 @@ In **Modules → Configure → Meteo**, use **Install Demo** to create `/meteo-d
 | Open-Meteo | No | 1-hour intervals |
 | OpenWeatherMap | Yes | 3-hour intervals on the free forecast API |
 | WeatherAPI.com | Yes | 1-hour intervals |
+| Apple WeatherKit | TokenForge + .p8 key | 1-hour intervals |
 
 OpenWeatherMap free forecast data returns 3-hour intervals, so `hourly` contains up to 8 entries for the next 24 hours.
+
+Apple WeatherKit requires TokenForge to generate the ES256 developer token. Configure
+`apple_team_id`, `apple_service_id`, `apple_key_id`, and `apple_private_key_path`, then
+select provider `apple` or use it as a fallback provider.
+
+```php
+$weather = $modules->Meteo->getWeather(40.1013, -75.3836, [
+    'provider' => 'apple',
+    'location_name' => 'Valley Forge',
+    'timezone' => 'America/New_York',
+]);
+```
 
 ## Cache
 

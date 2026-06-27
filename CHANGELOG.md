@@ -1,17 +1,19 @@
 # Changelog
 
-## 1.1.0 — 2026-06-18
+## 1.1.0 — 2026-06-26
 
 ### Added
 - Added widget theme modes: `auto`, `light`, and `dark`.
 - Added one-click Material M3 demo page install/remove from module settings.
 - Added redesigned module settings UI with `pw-design-system` / AdminThemeUikit token support.
+- Added Apple WeatherKit provider support through TokenForge ES256 JWT tokens.
 
 ### Fixed
 - Improved provider fallback diagnostics and unknown provider handling.
 - Fixed weather cache keys for timezone/location-specific output.
 - Fixed WeatherAPI date parsing for daily labels and sunrise/sunset.
 - Hardened JSON/cache handling and custom template resolution.
+- Hardened Apple WeatherKit locale, data set, and response normalization handling.
 - Removed PHP 8.5 deprecated `curl_close()` usage.
 
 ### Changed

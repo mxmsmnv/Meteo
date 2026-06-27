@@ -112,11 +112,34 @@ trait MeteoAdminDemo {
 $meteo = $modules->get('Meteo');
 $lat = 40.7128;
 $lon = -74.0060;
+$moduleOptions = $meteo->moduleOptions();
+$locationName = 'New York';
+$timezone = $moduleOptions['timezone'] ?: 'America/New_York';
+$providerLabels = [
+    'open_meteo' => 'Open-Meteo',
+    'openweathermap' => 'OpenWeatherMap',
+    'weatherapi' => 'WeatherAPI.com',
+    'apple' => 'Apple Weather',
+];
+$availableProviders = ['open_meteo' => true];
+if (!empty($moduleOptions['owm_key'])) $availableProviders['openweathermap'] = true;
+if (!empty($moduleOptions['wapi_key'])) $availableProviders['weatherapi'] = true;
+if (
+    !empty($moduleOptions['apple_team_id'])
+    && !empty($moduleOptions['apple_service_id'])
+    && !empty($moduleOptions['apple_key_id'])
+    && !empty($moduleOptions['apple_private_key_path'])
+) {
+    $availableProviders['apple'] = true;
+}
+$requestedProvider = preg_replace('/[^a-z0-9_]/', '', strtolower((string)$input->get('provider')));
+$providerName = isset($availableProviders[$requestedProvider]) ? $requestedProvider : 'open_meteo';
+$providerLabel = $providerLabels[$providerName] ?? $providerName;
 $options = [
-    'provider' => 'open_meteo',
-    'language' => 'en',
-    'timezone' => 'America/New_York',
-    'location_name' => 'New York',
+    'provider' => $providerName,
+    'language' => $moduleOptions['language'] ?: 'en',
+    'timezone' => $timezone,
+    'location_name' => $locationName,
 ];
 
 ?>
@@ -439,8 +462,10 @@ $options = [
                 <h1><?= $sanitizer->entities($page->title) ?></h1>
                 <p class="mt-m3-lede">Material Design 3 presentation for the bundled Meteo widgets, including tonal surfaces, adaptive color scheme, and forced light or dark widget themes.</p>
                 <div class="mt-m3-hero-meta">
-                    <span class="mt-m3-chip mt-m3-chip--filled">Open-Meteo</span>
-                    <span class="mt-m3-chip">New York</span>
+                    <?php foreach (array_keys($availableProviders) as $providerOption): ?>
+                        <a class="mt-m3-chip <?= $providerOption === $providerName ? 'mt-m3-chip--filled' : '' ?>" href="<?= $sanitizer->entities($page->url . '?provider=' . $providerOption) ?>"><?= $sanitizer->entities($providerLabels[$providerOption] ?? $providerOption) ?></a>
+                    <?php endforeach; ?>
+                    <span class="mt-m3-chip"><?= $sanitizer->entities($locationName) ?></span>
                     <span class="mt-m3-chip">Auto theme</span>
                 </div>
             </div>
@@ -484,8 +509,8 @@ $options = [
                     <span class="mt-m3-label">Runtime</span>
                 </div>
                 <ul class="mt-m3-list">
-                    <li><span>Provider</span><strong>Open-Meteo</strong></li>
-                    <li><span>Timezone</span><strong>America/New_York</strong></li>
+                    <li><span>Provider</span><strong><?= $sanitizer->entities($providerLabel) ?></strong></li>
+                    <li><span>Timezone</span><strong><?= $sanitizer->entities($timezone) ?></strong></li>
                     <li><span>Templates</span><strong>card, full, minimal</strong></li>
                     <li><span>Themes</span><strong>auto, light, dark</strong></li>
                 </ul>

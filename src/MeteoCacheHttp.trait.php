@@ -59,7 +59,7 @@ trait MeteoCacheHttp {
         if (!rename($tmp, $file)) @unlink($tmp);
     }
 
-    public function httpGet(string $url, int $maxRetries = 2): string|false {
+    public function httpGet(string $url, int $maxRetries = 2, array $headers = []): string|false {
         $baseDelay = 500000; // 500ms
 
         for ($attempt = 0; $attempt <= $maxRetries; $attempt++) {
@@ -80,6 +80,11 @@ trait MeteoCacheHttp {
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_FOLLOWLOCATION => true,
             ]);
+
+            if (!empty($headers)) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            }
+
             $result = curl_exec($ch);
             $code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err    = curl_error($ch);

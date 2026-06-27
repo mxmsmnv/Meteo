@@ -14,6 +14,10 @@ trait MeteoConfigInputfields {
             'cache_time'        => 1800,
             'owm_key'           => '',
             'wapi_key'          => '',
+            'apple_team_id'      => '',
+            'apple_service_id'   => '',
+            'apple_key_id'       => '',
+            'apple_private_key_path' => '',
             'fallback_providers'=> '',
         ], $data);
 
@@ -33,6 +37,7 @@ trait MeteoConfigInputfields {
             'open_meteo' => 'Open-Meteo',
             'openweathermap' => 'OpenWeatherMap',
             'weatherapi' => 'WeatherAPI.com',
+            'apple' => 'Apple Weather',
         ];
 
         $f = $modules->get('InputfieldMarkup');
@@ -52,7 +57,7 @@ trait MeteoConfigInputfields {
             . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">Provider</span><span class="mt-admin-settings__value">' . htmlspecialchars($providerLabels[$data['provider']] ?? $data['provider'], ENT_QUOTES, 'UTF-8') . '</span><span class="mt-admin-settings__note">Fallbacks: ' . htmlspecialchars($data['fallback_providers'] ?: 'none', ENT_QUOTES, 'UTF-8') . '</span></div>'
             . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">Display</span><span class="mt-admin-settings__value">' . htmlspecialchars(strtoupper($data['units']) . ' · ' . $data['language'] . ' · ' . $data['widget_theme'], ENT_QUOTES, 'UTF-8') . '</span><span class="mt-admin-settings__note">Timezone: ' . htmlspecialchars($data['timezone'] ?: 'auto', ENT_QUOTES, 'UTF-8') . '</span></div>'
             . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">Cache</span><span class="mt-admin-settings__value">' . (int)$data['cache_time'] . ' seconds</span><span class="mt-admin-settings__note">' . $cacheCount . ' files · ' . $cacheSizeKb . ' KB</span></div>'
-            . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">API Keys</span><span class="mt-admin-settings__value"><span class="mt-admin-settings__pill uk-label ' . ($data['owm_key'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">OWM ' . ($data['owm_key'] ? 'set' : 'missing') . '</span> <span class="mt-admin-settings__pill uk-label ' . ($data['wapi_key'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">WAPI ' . ($data['wapi_key'] ? 'set' : 'missing') . '</span></span><span class="mt-admin-settings__note">Only required for non-Open-Meteo providers.</span></div>'
+            . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">Credentials</span><span class="mt-admin-settings__value"><span class="mt-admin-settings__pill uk-label ' . ($data['owm_key'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">OWM ' . ($data['owm_key'] ? 'set' : 'missing') . '</span> <span class="mt-admin-settings__pill uk-label ' . ($data['wapi_key'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">WAPI ' . ($data['wapi_key'] ? 'set' : 'missing') . '</span> <span class="mt-admin-settings__pill uk-label ' . ($data['apple_team_id'] && $data['apple_service_id'] && $data['apple_key_id'] && $data['apple_private_key_path'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">Apple ' . ($data['apple_team_id'] && $data['apple_service_id'] && $data['apple_key_id'] && $data['apple_private_key_path'] ? 'set' : 'missing') . '</span></span><span class="mt-admin-settings__note">Apple WeatherKit requires TokenForge and private key path.</span></div>'
             . '<div class="mt-admin-settings__card uk-card uk-card-default uk-card-small"><span class="mt-admin-settings__label uk-text-muted">Demo</span><span class="mt-admin-settings__value"><span class="mt-admin-settings__pill uk-label ' . ($status['installed'] ? 'mt-admin-settings__pill--ok uk-label-success' : 'mt-admin-settings__pill--warn uk-label-warning') . '">' . ($status['installed'] ? 'Installed' : 'Not installed') . '</span></span><span class="mt-admin-settings__note">/meteo-demo/</span></div>'
             . '</div></div>';
         $wrap->add($f);
@@ -70,6 +75,7 @@ trait MeteoConfigInputfields {
             'open_meteo'     => 'Open-Meteo (free, no key)',
             'openweathermap' => 'OpenWeatherMap (free tier, API key required)',
             'weatherapi'     => 'WeatherAPI.com (free tier, API key required)',
+            'apple'          => 'Apple WeatherKit (requires TokenForge + .p8 key)',
         ]);
         $f->attr('value', $data['provider']);
         $f->columnWidth = 50;
@@ -130,7 +136,7 @@ trait MeteoConfigInputfields {
         $f->attr('name', 'fallback_providers');
         $f->label = 'Fallback Providers';
         $f->description = 'Comma-separated provider names to try if primary fails. Example: weatherapi,open_meteo';
-        $f->notes = 'Allowed values: open_meteo, openweathermap, weatherapi.';
+        $f->notes = 'Allowed values: open_meteo, openweathermap, weatherapi, apple.';
         $f->attr('value', $data['fallback_providers']);
         $f->columnWidth = 50;
         $reliability->add($f);
@@ -163,7 +169,7 @@ trait MeteoConfigInputfields {
         // --- API Keys ---
         $fieldset = $modules->get('InputfieldFieldset');
         $fieldset->label = 'API Keys';
-        $fieldset->description = 'Only needed when OpenWeatherMap or WeatherAPI.com is used as primary or fallback provider.';
+        $fieldset->description = 'Needed when credentialed providers are used as primary or fallback provider.';
         $fieldset->collapsed = Inputfield::collapsedYes;
 
         $f = $modules->get('InputfieldText');
@@ -173,6 +179,39 @@ trait MeteoConfigInputfields {
         $f->notes = 'Get a free key at openweathermap.org/api.';
         $f->attr('value', $data['owm_key']);
         $f->attr('type', 'password');
+        $f->columnWidth = 50;
+        $fieldset->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'apple_team_id');
+        $f->label = 'Apple WeatherKit Team ID';
+        $f->description = 'Used by provider apple.';
+        $f->attr('value', $data['apple_team_id']);
+        $f->columnWidth = 50;
+        $fieldset->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'apple_service_id');
+        $f->label = 'Apple WeatherKit Service ID';
+        $f->description = 'Used by provider apple.';
+        $f->attr('value', $data['apple_service_id']);
+        $f->columnWidth = 50;
+        $fieldset->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'apple_key_id');
+        $f->label = 'Apple WeatherKit Key ID';
+        $f->description = 'Used by provider apple.';
+        $f->attr('value', $data['apple_key_id']);
+        $f->columnWidth = 50;
+        $fieldset->add($f);
+
+        $f = $modules->get('InputfieldText');
+        $f->attr('name', 'apple_private_key_path');
+        $f->label = 'Apple WeatherKit Private Key Path';
+        $f->description = 'Absolute or /site relative path to .p8 private key file.';
+        $f->notes = 'Example: /site/assets/private/AuthKey_XXXXXX.p8';
+        $f->attr('value', $data['apple_private_key_path']);
         $f->columnWidth = 50;
         $fieldset->add($f);
 

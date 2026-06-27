@@ -6,7 +6,7 @@ Weather module for [ProcessWire CMS](https://processwire.com/). Meteo gets curre
 
 ## Features
 
-- Weather providers: Open-Meteo, OpenWeatherMap, WeatherAPI.com.
+- Weather providers: Open-Meteo, OpenWeatherMap, WeatherAPI.com, Apple WeatherKit.
 - Provider fallback chain if the primary provider fails.
 - Current, hourly, and daily forecast data.
 - City geocoding.
@@ -19,6 +19,8 @@ Weather module for [ProcessWire CMS](https://processwire.com/). Meteo gets curre
 ## Install
 
 Copy `Meteo` to `/site/modules/`, refresh modules in ProcessWire admin, then install and configure **Meteo**.
+
+Apple WeatherKit provider requires the separate **TokenForge** module for ES256 JWT generation and a readable `.p8` private key path.
 
 ## Links
 
